@@ -92,16 +92,21 @@ const drawText = (
   }
   if (!halfBlock) lines.push(location);
   if (drawInstructorText) {
-    const instructorsArray = JSON.parse(classObj.instructorName.replace(/'/g, '"'));
-    const instructorName = instructorsArray[0];
-    const instructorNames = instructorName.split(" ");
-    const lastName = instructorNames[instructorNames.length - 1];
-    const instructorText =
-      instructorNames
-        .slice(0, -1)
-        .map((n) => n[0] + ". ")
-        .join("") + lastName;
-    lines.push(instructorText.toUpperCase());
+    // todo(matt): hacky. backend gives JSON that has JSON encoded strings in it
+    try {
+      const instructorsArray = JSON.parse(classObj.instructorName.replace(/'/g, '"'));
+      const instructorName = instructorsArray[0];
+      const instructorNames = instructorName.split(" ");
+      const lastName = instructorNames[instructorNames.length - 1];
+      const instructorText =
+        instructorNames
+          .slice(0, -1)
+          .map((n) => n[0] + ". ")
+          .join("") + lastName;
+      lines.push(instructorText.toUpperCase());
+    } catch (e) {
+      console.error(e, `failed to determine instructor lastname from data: "${classObj.instructorName}"`);
+    }
   }
   ctx.fillStyle = blackColor;
   for (let i = 0; i < lines.length; i++) {
